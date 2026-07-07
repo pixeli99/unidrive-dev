@@ -19,14 +19,6 @@ architecture, high-resolution perception path, spatio-temporal fusion module,
 and training data loader support for paired temporal frames and high-resolution
 final-frame inputs.
 
-## Paper
-
-**UniDrive: A Unified Vision-Language and Grounding Framework for
-Interpretable Risk Understanding in Autonomous Driving**
-
-Xiaowei Gao, Pengxiang Li, Yitai Cheng, Ruihan Xu, James Haworth, Stephen Law,
-Yun Ye
-
 The paper studies a central limitation of driving-oriented MLLMs: models with
 temporal context often lose fine spatial detail, while high-resolution
 single-frame models often lack dynamic risk reasoning. UniDrive addresses this
@@ -240,64 +232,6 @@ print(tokenizer.decode(output_ids[0], skip_special_tokens=True))
 
 Expected output is a risk explanation followed by a `<box>...</box>` span.
 
-## Paper Results
-
-### DRAMA-Reasoning Validation Split
-
-The paper evaluates captioning with BLEU-4 (B4), METEOR, CIDEr, and SPICE, and
-evaluates grounding with mean IoU. `AVG` is the arithmetic mean of B4 and mIoU.
-
-| Input | Method | B4 | CIDEr | mIoU | mIoU_S | AVG |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| Image | BLIP-2 | 46.1 | 194.7 | 46.3 | 8.1 | 46.2 |
-| Image | LLaVA | 47.5 | 198.6 | 47.2 | 8.0 | 47.4 |
-| Image | InstructBLIP | 49.9 | 205.0 | 47.8 | 9.1 | 48.9 |
-| Image | Shikra* | 49.8 | 204.7 | 50.3 | 10.4 | 50.1 |
-| Image | Ours w/o ST | 55.2 | 246.7 | 59.8 | 29.8 | 57.5 |
-| Video | eP-ALM | 51.4 | 225.1 | 43.2 | 7.2 | 47.3 |
-| Video | Video-LLAMA | 53.9 | 229.5 | 42.8 | 6.9 | 48.4 |
-| Video | UniDrive | 60.3 | 277.5 | 61.2 | 31.0 | 60.8 |
-
-### Zero-Shot Generalization
-
-| Dataset | Task | Baseline | UniDrive |
-| --- | --- | ---: | ---: |
-| NuScenes | VQA average accuracy | 68.1 | 75.3 |
-| BDD100K | Risk-object mAP@0.50 | 41.3 | 52.7 |
-
-On NuScenes, UniDrive improves most strongly on situation reasoning
-(63.6 vs. 54.5 for Video-LLAMA). On BDD100K, it improves pedestrian, cyclist,
-and car AP in zero-shot risk localization.
-
-### Ablation Summary
-
-| Variant | B4 | CIDEr | mIoU | mIoU_S | AVG |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Full UniDrive | 60.3 | 277.5 | 61.2 | 31.0 | 60.8 |
-| w/o Temporal Reasoning Branch | 55.2 | 246.7 | 59.8 | 29.8 | 57.5 |
-| w/o High-Res Perception Branch | 52.8 | 238.2 | 47.9 | 12.4 | 50.4 |
-| w/o Spatio-Temporal Fusion | 52.4 | 222.8 | 44.6 | 9.7 | 48.5 |
-| w/o Box Token Grounding | 60.1 | 276.1 | 0.0 | 0.0 | 30.1 |
-
-These ablations support the paper's main claim: temporal reasoning improves
-risk explanation, high-resolution perception improves spatial localization, and
-explicit gated fusion is needed to align the two.
-
-### Robustness and Efficiency
-
-| Condition | UniDrive mIoU | UniDrive CIDEr | Video-LLAMA mIoU | Video-LLAMA CIDEr |
-| --- | ---: | ---: | ---: | ---: |
-| Day / Clear | 61.2 | 277.5 | 42.8 | 229.5 |
-| Night | 56.1 | 259.3 | 34.2 | 201.7 |
-| Rainy | 57.5 | 265.8 | 36.1 | 210.4 |
-
-| Method | Parameters (B) | GFLOPs | Speed (FPS) |
-| --- | ---: | ---: | ---: |
-| LLaVA-1.5 (7B) | 7.1 | 795 | 12.1 |
-| Video-LLAMA (7B) | 7.8 | 910 | 10.5 |
-| UniDrive | 8.2 | 980 | 9.8 |
-
-The paper reports the speed on a single NVIDIA A100 GPU.
 
 ## Limitations
 
